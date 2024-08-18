@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from .permissions import IsStudent, IsAdmin, IsTeacher
 
 # Create your views here.
 class UserRegistrationView(APIView):
@@ -44,3 +45,21 @@ class UserLogoutView(APIView):
         token.delete()
 
         return Response({'detail': 'Successfully logged out.'})
+
+
+
+class DashboardView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role == 'administrator':
+            return Response({"message": "Welcome, Admin! Here's your dashboard data."})
+        elif request.user.role == 'teacher':
+            return Response({"message": "Welcome, Teacher! Here's your dashboard data."})
+        elif request.user.role == 'student':
+            return Response({"message": "Welcome, Student! Here's your dashboard data."})
+        elif request.user.role == 'staff':
+            return Response({"message": "Welcome, Staff! Here's your dashboard data."})
+        else:
+            return Response({"message": "Role not recognized."}, status=403)
